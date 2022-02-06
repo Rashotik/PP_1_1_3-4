@@ -10,7 +10,6 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     static public Connection connect = Util.getConnect();
     public void createUsersTable() {
-
         try {
             Statement stmt = connect.createStatement( );
             stmt.execute("CREATE TABLE IF NOT EXISTS `my`.`Users` (" +
@@ -36,11 +35,13 @@ public class UserServiceImpl implements UserService {
 
     public void saveUser(String name, String lastName, byte age) {
         try {
-            Statement stmt = connect.createStatement( );
-            stmt.execute("INSERT INTO Users (`name`, `lastName`, `age`) values ('" +
-                    name + "','" +
-                    lastName + "','" +
-                    age + "')");
+            PreparedStatement stmt = connect.prepareStatement("INSERT INTO " +
+                    "Users (`name`, `lastName`, `age`) " +
+                    "VALUES (?, ?, ?)");
+            stmt.setString(1, name);
+            stmt.setString(2, lastName);
+            stmt.setInt(3, age);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,8 +50,9 @@ public class UserServiceImpl implements UserService {
 
     public void removeUserById(long id) {
         try {
-            Statement stmt = connect.createStatement( );
-            stmt.execute("DELETE FROM Users WHERE `id` = '" + id + "'");
+            PreparedStatement stmt = connect.prepareStatement("DELETE FROM Users WHERE `id` = ?");
+            stmt.setLong(1, id);
+            stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -60,9 +62,8 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try {
-            Statement stmt = connect.createStatement( );
-            ResultSet set = stmt.executeQuery("SELECT * FROM my.Users;");
-            ResultSetMetaData meta = set.getMetaData();
+            PreparedStatement stmt = connect.prepareStatement("SELECT * FROM my.Users;");
+            ResultSet set = stmt.executeQuery();
             while(set.next()) {
                     User u = new User(
                             set.getString("name"),
@@ -80,8 +81,8 @@ public class UserServiceImpl implements UserService {
 
     public void cleanUsersTable() {
         try {
-            Statement stmt = connect.createStatement( );
-            stmt.execute("DELETE FROM my.Users;");
+            PreparedStatement stmt = connect.prepareStatement("DELETE FROM my.Users;");
+            stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
