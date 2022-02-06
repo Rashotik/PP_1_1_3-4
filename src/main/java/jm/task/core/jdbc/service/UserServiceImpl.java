@@ -1,13 +1,15 @@
 package jm.task.core.jdbc.service;
 
+import jm.task.core.jdbc.dao.UserDao;
+import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
+    UserDao dao = new UserDaoJDBCImpl();
     static public Connection connect = Util.getConnect();
     public void createUsersTable() {
         try {
@@ -34,57 +36,18 @@ public class UserServiceImpl implements UserService {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try {
-            PreparedStatement stmt = connect.prepareStatement("INSERT INTO " +
-                    "Users (`name`, `lastName`, `age`) " +
-                    "VALUES (?, ?, ?)");
-            stmt.setString(1, name);
-            stmt.setString(2, lastName);
-            stmt.setInt(3, age);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        System.out.println("User with name: " + name + " is added to database");
+        dao.saveUser(name, lastName, age);
     }
 
     public void removeUserById(long id) {
-        try {
-            PreparedStatement stmt = connect.prepareStatement("DELETE FROM Users WHERE `id` = ?");
-            stmt.setLong(1, id);
-            stmt.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        dao.removeUserById(id);
     }
 
     public List<User> getAllUsers() {
-        List<User> users = new ArrayList<>();
-        try {
-            PreparedStatement stmt = connect.prepareStatement("SELECT * FROM my.Users;");
-            ResultSet set = stmt.executeQuery();
-            while(set.next()) {
-                    User u = new User(
-                            set.getString("name"),
-                            set.getString("lastName"),
-                            set.getByte("age"));
-                    u.setId(set.getLong("id"));
-                    users.add(u);
-
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return users;
+        return dao.getAllUsers();
     }
 
     public void cleanUsersTable() {
-        try {
-            PreparedStatement stmt = connect.prepareStatement("DELETE FROM my.Users;");
-            stmt.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        dao.cleanUsersTable();
     }
 }
