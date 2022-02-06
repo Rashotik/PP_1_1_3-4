@@ -3,19 +3,16 @@ package jm.task.core.jdbc.service;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
-
+    static public Connection connect = Util.getConnect();
     public void createUsersTable() {
 
         try {
-            Statement stmt = Util.connect.createStatement( );
+            Statement stmt = connect.createStatement( );
             stmt.execute("CREATE TABLE IF NOT EXISTS `my`.`Users` (" +
                     "  `id` INT NOT NULL AUTO_INCREMENT," +
                     "  `name` varchar(45)," +
@@ -29,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     public void dropUsersTable() {
         try {
-            Statement stmt = Util.connect.createStatement( );
+            Statement stmt = connect.createStatement( );
             stmt.execute("DROP TABLE If EXISTS Users");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     public void saveUser(String name, String lastName, byte age) {
         try {
-            Statement stmt = Util.connect.createStatement( );
+            Statement stmt = connect.createStatement( );
             stmt.execute("INSERT INTO Users (`name`, `lastName`, `age`) values ('" +
                     name + "','" +
                     lastName + "','" +
@@ -52,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     public void removeUserById(long id) {
         try {
-            Statement stmt = Util.connect.createStatement( );
+            Statement stmt = connect.createStatement( );
             stmt.execute("DELETE FROM Users WHERE `id` = '" + id + "'");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -63,7 +60,7 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try {
-            Statement stmt = Util.connect.createStatement( );
+            Statement stmt = connect.createStatement( );
             ResultSet set = stmt.executeQuery("SELECT * FROM my.Users;");
             ResultSetMetaData meta = set.getMetaData();
             while(set.next()) {
@@ -83,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
     public void cleanUsersTable() {
         try {
-            Statement stmt = Util.connect.createStatement( );
+            Statement stmt = connect.createStatement( );
             stmt.execute("DELETE FROM my.Users;");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -91,7 +88,7 @@ public class UserServiceImpl implements UserService {
     }
     public void deleteUsersTable(){
         try {
-            Statement stmt = Util.connect.createStatement( );
+            Statement stmt = connect.createStatement( );
             stmt.execute("DROP TABLE my.Users;");
         } catch (SQLException e) {
             e.printStackTrace();
