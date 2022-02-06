@@ -21,6 +21,6 @@ public class Main {
         }
 
         service.cleanUsersTable();
-        service.deleteUsersTable();
+        service.dropUsersTable();
     }
 }

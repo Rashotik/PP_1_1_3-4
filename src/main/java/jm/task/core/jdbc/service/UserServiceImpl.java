@@ -87,12 +87,4 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
     }
-    public void deleteUsersTable(){
-        try {
-            Statement stmt = connect.createStatement( );
-            stmt.execute("DROP TABLE my.Users;");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }
